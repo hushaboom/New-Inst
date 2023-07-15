@@ -9,41 +9,55 @@
 
 ]]--
 
---Begin with file arrangement
+local myGroups = instrument.groups
+local micStrings = {"Kick", "Snare", "Hat"}
+local i = 0
+local ix = 1
 
---main path
-local sample_base_path = filesystem.parentPath(scriptPath) .. filesystem.preferred("/Samples")
-local script_base_path = filesystem.parentPath(scriptPath) .. filesystem.preferred("/scripts")
+instrument.name = "-< Dreambeat v.0.0.1 Monolith Build >-"
 
---Region path   (Left/Right - to be managed by switcher)
-local group0_path = filesystem.preferred(sample_base_path .. "/Group 0")
-local group1_path = filesystem.preferred(sample_base_path .. "/Group 1")
+if #instrument.groups < 6 then
+    
+    --Build groups (Primary - Mic 1)
+    while i < 3 do
 
---Voice path    (Drum - always the middle man - both Regions have these containers)
-local kick_path = filesystem.preferred("/kick")
-local snare_path = filesystem.preferred("/snare")
-local hat_path = filesystem.preferred("/hat")
+        local group0 = instrument.groups[i]
+        group0.name = micStrings[ix] .. " 0"
+        group0.volume = 12
+        group0.playbackMode = PlaybackMode.Sampler
 
---Sources (Containers holding samples. - need to be mapped - subject to randomizer)
-local kicks = {filesystem.preferred("/mic 1/"), filesystem.preferred("/mic 2/")}
-local snares = {filesystem.preferred("/mic 1/"), filesystem.preferred("/mic 2/")}
-local hats = {filesystem.preferred("/mic 1/"), filesystem.preferred("/mic 2/")}
+        i = i + 1
+        ix = ix + 1
 
---All sample files names 01,02,0n.wav
-local s1 = "01.wav"
-local s2 = "02.wav"
-local s3 = "03.wav"
+        local g = Group()
+        instrument.groups:add(g)
 
---[[
+    end
 
-        Mic 1 and Mic 2 are going to be the primary Zones
-        Sources will be primary groups  
+    ix = 1
 
-    zones are called thusly:
+    --Build groups (Secondary - Mic 2)
+    while i < 6 do
 
-        zone = <REGION_PATH> .. <VOICE_PATH> .. <SOURCES_PATH> .. <SAMPLE_PATH>
-                                              **<SOURCES_PATH> is Array.  
+        local group0 = instrument.groups[i]
+        group0.name = micStrings[ix] .. " 1"
+        group0.volume = 0
+        group0.playbackMode = PlaybackMode.DirectFromDisk
 
-]]--
+        i = i + 1
+        ix = ix + 1
 
---Build Primary Mic groups
+        if i < 6 then
+
+            local g = Group()
+            instrument.groups:add(g)
+
+        end
+        
+    end
+
+    dofile(scriptPath .. filesystem.preferred("/zoner.lua"))
+
+end
+
+--[[     End of Init     ]]--
